@@ -13,33 +13,62 @@ class Graph:
         """
         Add a vertex to the graph.
         """
-        pass  # TODO
+        self.vertices[vertex_id] = set()
 
     def add_edge(self, v1, v2):
         """
         Add a directed edge to the graph.
         """
-        pass  # TODO
+        if v1 in self.vertices and v2 in self.vertices:
+            self.vertices[v1].add(v2)
 
     def get_neighbors(self, vertex_id):
         """
         Get all neighbors (edges) of a vertex.
         """
-        pass  # TODO
+        return self.vertices[vertex_id]
 
     def bft(self, starting_vertex):
         """
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        # breadth-first uses a queue
+        q = Queue()
+        # start with starting_vertex
+        q.enqueue(starting_vertex)
+        visited = set()
+
+        while q.size() > 0:
+            # dequeue the first item
+            item = q.dequeue()
+            if item not in visited:
+                visited.add(item)
+                print(item)
+
+                for next_vortex in self.get_neighbors(item):
+                    q.enqueue(next_vortex)
 
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        # depth-first uses a stack
+        s = Stack()
+        # begin with starting_vertex
+        s.push(starting_vertex)
+        visited = set()
+
+        while s.size() > 0:
+            # grab the first item from the stack
+            item = s.pop()
+            if item not in visited:
+                visited.add(item)
+                print(item)
+
+                for next_vortex in self.get_neighbors(item):
+                    s.push(next_vortex)
 
     def dft_recursive(self, starting_vertex):
         """
@@ -119,6 +148,7 @@ if __name__ == '__main__':
         1, 2, 4, 3, 7, 5, 6
     '''
     graph.bft(1)
+    print("\n")
 
     '''
     Valid DFT paths:
@@ -128,6 +158,7 @@ if __name__ == '__main__':
         1, 2, 4, 6, 3, 5, 7
     '''
     graph.dft(1)
+    print("\n")
     graph.dft_recursive(1)
 
     '''
