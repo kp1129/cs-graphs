@@ -133,6 +133,8 @@ class Graph:
                     # add the updated list path to the queue
                     q.enqueue(new_lst)
 
+        return None            
+
     def dfs(self, starting_vertex, destination_vertex):
         """
         Return a list containing a path from
