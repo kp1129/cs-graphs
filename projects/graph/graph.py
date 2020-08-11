@@ -77,13 +77,20 @@ class Graph:
 
         This should be done using recursion.
         """
-        if starting_vertex not in visited:
-            visited.add(starting_vertex)
-            print(starting_vertex)
+        # if starting_vertex not in visited:
+        #     visited.add(starting_vertex)
+        #     print(starting_vertex)
 
-            neighbors = self.get_neighbors(starting_vertex)
-            for each in neighbors:
-                self.dft_recursive(each, visited)
+        #     neighbors = self.get_neighbors(starting_vertex)
+        #     for each in neighbors:
+        #         self.dft_recursive(each, visited)
+
+        visited.add(starting_vertex)
+        print(starting_vertex)
+
+        for neighbor in self.get_neighbors(starting_vertex):
+            if neighbor not in visited:
+                self.dft_recursive(neighbor, visited)
 
         
 
