@@ -114,7 +114,16 @@ class Graph:
                     # add them to the top of the stack
                     s.push(neighbor)
 
-    # def dft_recursive(self, starting_vertex):
+    # def dft_recursive(self, starting_vertex): 
+    # #initialize it with a parameter of visited=None. 
+    # in python, when you have a mutable argument you have 
+    # to default to None and then one of the first things you
+    #  do in the function is check if it is none and assign it 
+    # something else, like an empty set here. 
+    # this is a python pattern.
+    # with python, the default object is created one time in the beginning of 
+    # the call and then it gets reused with each subsequent call.
+    # in javascript, a new object is created each time the function is called.
     #     """
     #     Print each vertex in depth-first order
     #     beginning from starting_vertex.
@@ -227,8 +236,8 @@ class Graph:
     #     pass  # TODO
 
 if __name__ == '__main__':
-    graph = Graph()  # Instantiate your graph
-    # https://github.com/LambdaSchool/Graphs/blob/master/objectives/breadth-first-search/img/bfs-visit-order.png
+    graph = Graph()  
+    
     graph.add_vertex(1)
     graph.add_vertex(2)
     graph.add_vertex(3)

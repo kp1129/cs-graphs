@@ -148,4 +148,8 @@ ________________________________________________________________________________
 practical to draw everything close to the starting point and then radiate out, but you want to 
 draw the entire path to the end first before coming back and picking up another path 
 
+
+more on graphs: (specifically the terminology)
+https://www.statisticshowto.com/graph-theory/
+
 """
