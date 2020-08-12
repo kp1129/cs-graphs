@@ -143,6 +143,9 @@ def earliest_ancestor(ancestors, starting_node):
     q.enqueue([starting_node])
     visited = set()
 
+    pair_of_ancestors = []
+    
+
     while q.size() > 0:
         path = q.dequeue()
         v = path[-1]
@@ -154,29 +157,29 @@ def earliest_ancestor(ancestors, starting_node):
                 # if node has no parents and it's our initial node
                 if v == starting_node:
                     return -1
-                else:
+                elif v not in pair_of_ancestors:
                     return v
+                elif v in pair_of_ancestors:
+                    p1_check = g.get_ancestors(pair_of_ancestors[0])
+                    p2_check = g.get_ancestors(pair_of_ancestors[1])
+                    if len(p1_check) == 0 and len(p2_check) == 0:
+                        return min(pair_of_ancestors)
 
             else:
                 visited.add(v)
+                if len(parents) == 2 and len(pair_of_ancestors) >= 0:
+                    for each in parents:
+                        pair_of_ancestors.append(each)
+                
 
                 for parent in parents:
-                    new_path = path.copy()
+                   
+                    new_path = list(path)
                     new_path.append(parent)
                     q.enqueue(new_path)    
 
 
-    # where i left off:
-    # in the case of two parents, it's returning the 'shortest path' instead of 
-    # exploring the parents of the other parent
-    # this is the test that's failing: self.assertEqual(earliest_ancestor(test_ancestors, 3), 10) 
-    # mine returns 2 instead of 10
-
-
-
-
-
-
+    
     # #
     # # starting with the starting_node, get it's edges/neighbors that it's connected to. check to see if they have edges/ancestors
     # result = g.get_ancestors(starting_node)
@@ -216,5 +219,5 @@ def earliest_ancestor(ancestors, starting_node):
 
 sample_pairs = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]    
 
-print(earliest_ancestor(sample_pairs, 1))   
+print(earliest_ancestor(sample_pairs, 3))   
 
