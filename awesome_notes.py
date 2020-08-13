@@ -152,4 +152,33 @@ draw the entire path to the end first before coming back and picking up another 
 more on graphs: (specifically the terminology)
 https://www.statisticshowto.com/graph-theory/
 
+__________________________________________________________
+connected components
+-a set of nodes that is connected to one another in some way
+
+-graphs can have multiple sets of connected nodes that are disjoint
+
+-a set of connected nodes is called a connected component
+
+counting connected components:
+while there are unvisited nodes:
+        choose an unvisited node
+        traverse from that node, marking each as visited
+        increment connected component counter
+or
+
+for each node in the graph:
+        if it's unvisited:
+            traverse from that node, marking each as visited
+            increment connected component counter
+
+
+
+
+
+
+
+
+
+
 """
