@@ -30,11 +30,14 @@ class SocialGraph:
         """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
             print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            return True
 
     def add_user(self, name):
         """
@@ -45,6 +48,7 @@ class SocialGraph:
         self.friendships[self.last_id] = set()
 
     def populate_graph(self, num_users, avg_friendships):
+        # what's the time complexity of this? O(n^2), quadratic
         """
         Takes a number of users and an average number of friendships
         as arguments
@@ -60,27 +64,68 @@ class SocialGraph:
         self.friendships = {}
         # !!!! IMPLEMENT ME
 
-        # Add users
+        # Add users - linear time complexity
         for user in range(num_users):
             self.add_user(user)
 
         # Create friendships
         # create array with all possible friendships
         possible_friendships = []
-        for user in range(1, self.last_id + 1):
+        for user in range(1, self.last_id + 1): #nested for loop, quadratic
             for friend in range(user + 1, self.last_id + 1):
                 possible_friendship = (user, friend)
                 possible_friendships.append(possible_friendship)
                 
         # then shuffle it randomly and only take as many as we need
-        random.shuffle(possible_friendships)
+        random.shuffle(possible_friendships)  #linear
         # and add those friendships since we 
         total_friendships = num_users * avg_friendships // 2
         random_friendships = possible_friendships[:total_friendships]
 
-        # only need an avg num of friendships
+        # only need an avg num of friendships, linear time complexity
         for friendship in random_friendships:
             self.add_friendship(friendship[0], friendship[1])
+
+
+            # is there a way to avoid that double for loop? yesss
+    def populate_graph_linear(self, num_users, avg_friendships):        
+            # choose two random numbers (ints) between 1 and self.last_id
+            # try to make that friendship
+            # if it works, increment the friendship counter
+            # and when friendship counter == number of friendships we want, stop
+            # this would be linear time instead of quadratic
+
+        # Reset graph
+        self.last_id = 0
+        self.users = {}
+        self.friendships = {}
+        
+
+        # Add users - linear time complexity
+        for user in range(num_users):
+            self.add_user(user)
+
+        # friendship counter
+        friendships_successfully_added = 0
+
+        # how many friendships do we want?
+        target_friendships = num_users * avg_friendships
+
+        while friendships_successfully_added < target_friendships:
+            user_id = random.randint(1, self.last_id)
+            friend_id = random.randint(1, self.last_id)
+
+            # try to make that friendship
+            added_friendship = self.add_friendship(user_id, friend_id)
+
+            # if friendship was created successfully, increment frienship counter
+            if added_friendship:
+                #remember that each add friendship call makes 2 friendships,
+                #from user to friend and from friend to user
+                friendships_successfully_added += 2 
+
+
+
 
     def get_friendships(self, user_id):
         return self.friendships[user_id]
