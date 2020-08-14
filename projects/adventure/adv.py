@@ -49,17 +49,23 @@ class Stack:
         else:
             return None
     def size(self):
-        return len(self.stack)                    
+        return len(self.stack)       
+
+class Queue:
+    def __init__(self):
+        self.queue= []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue) 
 
 class Graph:
     def __init__(self):
-        # an adjacency list
-        # a dictionary where keys = room id's
-        # and values are a set/dictionary of 
-        # exit direction : room id it leads to
-
-        # if there's no exit in a direction, that 
-        # direction is not listed in the dictionary
         self.vertices = {}
 
     def add_vertex(self, vertex_id):
@@ -68,16 +74,9 @@ class Graph:
         # build a vertex's neighbors/exit dictionary
         exits_list = player.current_room.get_exits()
         for exit in exits_list:
-            self.vertices[vertex_id][exit] = "?"
-         
+            self.vertices[vertex_id][exit] = "?"         
 
     def add_edge(self, v1, d, v2):
-        # adds an edge/exit to another vertex/room
-        # remember that if we can go from room v1 to room v2
-        # that means we can also go from room v2 to room v1
-        # i.e., the edges and the graph as a whole is undirected
-        # and when adding v2 as a neighbor to v1 we need to also
-        # add v1 as a neighbor to v2
         directions_dict = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
         if v1 in self.vertices and v2 in self.vertices:
             self.vertices[v1][d] = v2
@@ -87,155 +86,95 @@ class Graph:
             raise IndexError("nonexistent vertex")     
 
     def get_neighbors(self, vertex_id):
-        # returns the neighbors/exit dictionary for given vertex_id 
         return self.vertices[vertex_id]
 
+    def bfs(self, starting_vertex_id, visited_rooms):
+        unexplored = "?"
+        q = Queue()
+        q.enqueue([starting_vertex_id])
 
+        while q.size() > 0:
+            path = q.dequeue()
+            v = path[-1]
+            if v == unexplored:
+                return path
+            else:    
+                print(v)
+                visited_rooms.add(v)
+                neighbors = self.get_neighbors(v)
+                neighbors_list = list(neighbors.values())
+                for neighbor in neighbors_list:
+                    path_copy = list(path)
+                    path_copy.append(neighbor)
+                    q.enqueue(path_copy)
 
-    def dft(self, cardinal_direction):
-        # depth-first traversal
-
-        # create a stack
-        s = Stack()
-        # put the starting vertex id on top of the stack
+    def dft(self, cardinal_direction, visited_rooms):
+        
+        s = Stack()        
         s.push(cardinal_direction)
-        # create a visited set
-        visited = set()
 
-        starting_room = player.current_room.id
-        self.add_vertex(starting_room)
+        # starting_room = player.current_room.id
+        # self.add_vertex(starting_room)
         traversal_path.append(cardinal_direction) 
-        # while stack is not empty:
+        
         while s.size() > 0:
-            # pop the top item off the stack
+           
             d = s.pop()
             pr_id = player.current_room.id
             print('going ', d)
             
             player.travel(d)
             cr_id = player.current_room.id
-            # if it is not in visited:
-            if cr_id not in visited:
-                # visit it! add it to visited
+            
+            if cr_id not in visited_rooms:
                 print(cr_id)
                 self.add_vertex(cr_id)
                 self.add_edge(pr_id, d, cr_id)
-                visited.add(cr_id)
-                # go through its neighbors. for each:
+                visited_rooms.add(cr_id)
+               
                 neighbors = self.get_neighbors(cr_id)
                 for direction, room in neighbors.items():
-                    # if they're not already visited, 
-                    # add them to the top of the stack
                     if room == "?":
                         s.push(direction)
                         traversal_path.append(direction) 
         print('dead end!')
-        print(self.vertices)   
+          
         print('traversal path: ', traversal_path)
-
-    # def dft(self, starting_vertex_id):
-    #     # depth-first traversal
-
-    #     # create a stack
-    #     s = Stack()
-    #     # put the starting vertex id on top of the stack
-    #     s.push(starting_vertex_id)
-    #     # create a visited set
-    #     visited = set()
-
-    #     # while stack is not empty:
-    #     while s.size() > 0:
-    #         # pop the top item off the stack
-    #         room = s.pop()
-    #         # if it is not in visited:
-    #         if room not in visited:
-    #             # visit it! add it to visited
-    #             print(room)
-    #             self.add_vertex(room)
-    #             visited.add(room)
-    #             # go through its neighbors. for each:
-    #             neighbors = self.get_neighbors(room)
-    #             for direction, room in neighbors.items():
-    #                 # if they're not already visited, 
-    #                 # add them to the top of the stack
-    #                 s.push(room)
-    #                 traversal_path.append(direction)
-
+        print('currently stuck in room ', player.current_room.id, " and awaiting further instructions")
 
 # create a graph
 g = Graph()
+visited_rooms = set()
+
 player.current_room = world.starting_room
 vertex_id = player.current_room.id
+
 exits = player.current_room.get_exits()
-g.dft(exits[0])
 
+visited_rooms.add(vertex_id)
+g.add_vertex(vertex_id)
+for exit in exits:
+    g.vertices[vertex_id][exit] = "?"
 
+g.dft(exits[0], visited_rooms)
+stuck_in = player.current_room.id
+exits = player.current_room.get_exits()
+hanging_out = g.bfs(stuck_in, visited_rooms)
+and_now = player.current_room.id
+print('after bfs made it to ', and_now)
+print('haaaanging out ', hanging_out)
 
+def translate_bfs_to_directions(list_of_rooms):
+    path = []
+    for i in range(len(list_of_rooms) - 2):
+        exits = g.get_neighbors(list_of_rooms[i])
+        for direction, room in exits.items():
+            if room == list_of_rooms[i + 1]:
+                path.append(direction)
+    return path
 
-
-
-
-
-
-# visited_rooms = set()    
-
-# player.current_room = world.starting_room
-# visited_rooms.add(player.current_room)
-# # starting vertex id
-# vertex_id = player.current_room.id
-# g.add_vertex(vertex_id)
-# exits = player.current_room.get_exits()
-# # for each exit available, add the direction : ? pairs 
-# # as neighbors for this vertex id
-# exits_dict = {}
-# for each in exits:
-#     exits_dict[each] = "?"
-# g.vertices[vertex_id] = exits_dict
-
-# travel_direction = 's'
-# player.travel(travel_direction)
-# prev_room_id = vertex_id
-# traversal_path.append(travel_direction)
-# vertex_id = player.current_room.id
-# visited_rooms.add(player.current_room)
-# g.add_vertex(vertex_id)
-# exits = player.current_room.get_exits()
-# # for each exit available, add the direction : ? pairs 
-# # as neighbors for this vertex id
-# exits_dict = {}
-# for each in exits:
-#     exits_dict[each] = "?"
-# g.vertices[vertex_id] = exits_dict
-# g.vertices[prev_room_id][travel_direction] = vertex_id
-# g.vertices[vertex_id]['n'] = prev_room_id
-# print('progress? ', g.vertices)
-# print('directions: ', traversal_path)
-# print('visited rooms ', visited_rooms)
-
-# def explore_dft(curr_room_obj):
-    
-#     # what are all the exits in this room?
-#     s = Stack()
-#     s.push(curr_room_obj)
-
-#     while s.size() > 0:
-#         curr_room = s.pop()
-#         # enter the room, get room id
-#         player.travel()
-#         if curr_room not in visited_rooms:
-#             visited_rooms.add(curr_room)
-#             # equivalent of get_neighbors
-#             available_exits = player.current_room.get_exits()
-#             try_this_direction = ''
-#             for each_exit in available_exits:
-#                 if each_exit not in visited_rooms[curr_room]:
-#                     visited_rooms[curr_room][each_exit] = "?"
-#                     try_this_direction = each_exit
-#                     player.travel(try_this_direction)
-#                     new_room_id = player.current_room.id
-#                     s.push(new_room_id)
-
-
+translated = translate_bfs_to_directions(hanging_out)
+print(translated)
 
 
 #_____________________________________________________________
