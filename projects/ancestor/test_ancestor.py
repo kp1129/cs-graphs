@@ -1,5 +1,7 @@
 import unittest
-from ancestor import earliest_ancestor
+# from ancestor import earliest_ancestor
+# from ancestor_2 import earliest_ancestor
+from ancestor_3 import earliest_ancestor
 
 class Test(unittest.TestCase):
 
